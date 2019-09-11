@@ -1,7 +1,9 @@
 # создание начальной популяции
 import random
 import statistics
+
 import vizualization
+
 
 
 # функция приспособленности
@@ -18,6 +20,7 @@ def crossover(generation):
         if parent_1 != parent_2:
             break
     return parent_1[0], parent_2[1]
+
 
 
 # функция мутации
@@ -82,8 +85,3 @@ META_DATA = {'retain_num': int(len(generation) * RATES['retain_rate']),
              }
 
 main_function(generation, **META_DATA)
-
-
-
-
-
