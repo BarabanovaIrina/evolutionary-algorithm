@@ -69,8 +69,6 @@ def main_function(generation, retain_num, cross_num, mutation_num, delta, number
 number_of_individuals = 10
 generation = [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
 
-
-
 RATES = {'retain_rate': 0.2,
          'crossover_rate': 0.4,
          'mutation_rate': 0.4,
