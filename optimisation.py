@@ -1,5 +1,6 @@
 import random
 import statistics
+import pandas as pd
 
 
 def fitness(args):
@@ -34,10 +35,8 @@ def new_offspring(generation, retain_num, cross_num, mutation_num, delta):
     return temp
 
 
-def optimization(retain_rate, crossover_rate, mutation_rate, delta, number_of_generations):
-    number_of_individuals = 10
+def optimization(retain_rate, crossover_rate, mutation_rate, delta, number_of_generations, number_of_individuals):
     generation = [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
-
     retain_num = int(len(generation) * retain_rate)
     cross_num = int(len(generation) * crossover_rate)
     mutation_num = int(len(generation) * mutation_rate)
@@ -61,13 +60,9 @@ def optimization(retain_rate, crossover_rate, mutation_rate, delta, number_of_ge
     return {'list_of_mins': list_of_mins,
             'list_of_averages': list_of_averages,
             'global_min': global_min,
-            'global_avg': global_avg
+            'global_avg': global_avg,
             }
 
 
-def write_to_file(list_of_mins, list_of_averages, global_min, global_avg):
-    with open('file.txt', 'w') as file:
-        file.write(f'Минимумы всех поколений: {list_of_mins}\n')
-        file.write(f'Средние всех поколений: {list_of_averages}\n')
-        file.write(f'Глобальный минимум: {global_min}\n')
-        file.write(f'Глобальное среднее: {global_avg}\n')
+def convert_data_for_boxplot(data):
+    return pd.DataFrame(data).T
