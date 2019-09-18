@@ -8,22 +8,26 @@ def fitness(args):
     return x ** 2 + y ** 2
 
 
-def crossover(generation):
+def crossover(generation, random_seed=None):
     while True:
-        sr = random.SystemRandom()
-        parent_1 = sr.choice(generation)
-        parent_2 = sr.choice(generation)
+        random.seed(random_seed)
+        parent_1 = random.choice(generation)
+        parent_2 = random.choice(generation)
         if parent_1 != parent_2:
             break
     return parent_1[0], parent_2[1]
 
 
-def mutation(generation, delta):
-    sr = random.SystemRandom()
-    sign = sr.choice([-1, 1])
-    parent = sr.choice(generation)
+def mutation(generation, delta, random_seed=None):
+    random.seed(random_seed)
+    sign = random.choice([-1, 1])
+    parent = random.choice(generation)
     child = (parent[0] + sign * delta, parent[1] + sign * delta)
     return child
+
+
+def init_generation(number_of_individuals):
+    return [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
 
 
 def new_offspring(generation, retain_num, cross_num, mutation_num, delta):
@@ -36,7 +40,7 @@ def new_offspring(generation, retain_num, cross_num, mutation_num, delta):
 
 
 def optimization(retain_rate, crossover_rate, mutation_rate, delta, number_of_generations, number_of_individuals):
-    generation = [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
+    generation = init_generation(number_of_individuals)
     retain_num = int(len(generation) * retain_rate)
     cross_num = int(len(generation) * crossover_rate)
     mutation_num = int(len(generation) * mutation_rate)
