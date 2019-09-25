@@ -9,6 +9,16 @@ def fitness(args):
     return x ** 2 + y ** 2
 
 
+def fitness_booth_function(args):
+    x, y = args
+    return (x+2*y-7)**2+(2*x+y-5)
+
+
+def fitness_matyas_function(args):
+    x, y = args
+    return 0.26*(x ** 2 + y ** 2)-0.48*x*y
+
+
 def crossover(generation, random_seed=None):
     while True:
         random.seed(random_seed)
@@ -29,6 +39,10 @@ def mutation(generation, delta, random_seed=None):
 
 def init_generation(number_of_individuals):
     return [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
+
+
+def init_uniform_generation():
+    pass
 
 
 def new_offspring(crossover_func, mutation_func, generation, meta_data):
@@ -74,6 +88,7 @@ def optimization(init_generation, fitness_function, crossover_function, mutation
     result_data['global_avg'] = statistics.mean(result_data['list_of_averages'])
 
     return result_data
+
 
 def convert_data_for_boxplot(data):
     return pd.DataFrame(data).T

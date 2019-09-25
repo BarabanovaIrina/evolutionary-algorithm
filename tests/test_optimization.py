@@ -11,6 +11,17 @@ def generation_for_test():
     return [(3, 7), (9, 4), (10, 4), (5, 2), (7, 2), (7, 5), (8, 2), (8, 7), (2, 2), (6, 7)]
 
 
+@pytest.fixture()
+def meta_data_for_test_optimization():
+    return namedtuple('meta_data_for_optimization',
+                      ['retain_rate',
+                       'crossover_rate',
+                       'mutation_rate',
+                       'delta_for_mutation',
+                       'number_of_generations',
+                       'number_of_individuals'])
+
+
 def test_fitness_correct():
     assert optimisation.fitness((1, 3)) == 10
 
@@ -50,7 +61,8 @@ def test_new_offspring(generation_for_test):
                                         10 ** (-3),
                                         )
 
-    assert len(optimisation.new_offspring(cross_func, mutation_func, generation_for_test, meta_data_for_offspring)) == 10
+    assert len(
+        optimisation.new_offspring(cross_func, mutation_func, generation_for_test, meta_data_for_offspring)) == 10
 
 
 def test_convert_data_to_dataframe():
@@ -60,26 +72,39 @@ def test_convert_data_to_dataframe():
     assert optimisation.convert_data_for_boxplot(dict_data).size == pd.DataFrame(dict_data).T.size
 
 
-def test_optimization():
-    meta_data = namedtuple('meta_data_for_optimization',
-                           ['retain_rate',
-                            'crossover_rate',
-                            'mutation_rate',
-                            'delta_for_mutation',
-                            'number_of_generations',
-                            'number_of_individuals'])
-    meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
+def test_optimization_fitness(meta_data_for_test_optimization):
+    meta_data_tuple = meta_data_for_test_optimization
+    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
 
     start_time = time.time()
-    optimisation.optimization(optimisation.init_generation,
-                              optimisation.fitness,
-                              optimisation.crossover,
-                              optimisation.mutation,
-                              meta_data_for_optimization)
+    result = optimisation.optimization(optimisation.init_generation,
+                                       optimisation.fitness,
+                                       optimisation.crossover,
+                                       optimisation.mutation,
+                                       meta_data)
     end_time = time.time()
     assert end_time - start_time <= 1
+    assert result['global_min'] < 15
 
 
+def test_optimization_booth_function(meta_data_for_test_optimization):
+    meta_data_structure = meta_data_for_test_optimization
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    result = optimisation.optimization(optimisation.init_generation,
+                                       optimisation.fitness_booth_function,
+                                       optimisation.crossover,
+                                       optimisation.mutation,
+                                       meta_data)
+
+    assert result['global_min'] < 10
 
 
-
+def test_optimization_matyas_function(meta_data_for_test_optimization):
+    meta_data_structure = meta_data_for_test_optimization
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    result = optimisation.optimization(optimisation.init_generation,
+                                       optimisation.fitness_matyas_function,
+                                       optimisation.crossover,
+                                       optimisation.mutation,
+                                       meta_data)
+    assert result['global_min'] < 1

@@ -4,7 +4,7 @@ from optimize import log
 from optimize.optimisation import (
     optimization,
     init_generation,
-    fitness,
+    fitness_matyas_function,
     crossover,
     mutation,
     convert_data_for_boxplot
@@ -22,7 +22,7 @@ if __name__ == '__main__':
                             'delta_for_mutation',
                             'number_of_generations',
                             'number_of_individuals'])
-    meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
+    meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
 
     PATH = "./"
     name_of_result_file = 'file.txt'
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     log.clean_file(PATH, name_of_result_file)
     stat_data_of_generation = dict()
     for index in range(10):
-        stat_data_of_generation = optimization(init_generation, fitness, crossover, mutation,
+        stat_data_of_generation = optimization(init_generation, fitness_matyas_function, crossover, mutation,
                                                meta_data_for_optimization)
         log.write_to_file(PATH, index, **stat_data_of_generation, name=name_of_result_file)
         history_of_mins[f'history{index}'] = stat_data_of_generation['list_of_mins']
