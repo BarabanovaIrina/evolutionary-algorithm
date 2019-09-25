@@ -1,5 +1,18 @@
-from optimize import optimisation, log, visualization
 from collections import namedtuple
+
+from optimize import log
+from optimize.optimisation import (
+    optimization,
+    init_generation,
+    fitness,
+    crossover,
+    mutation,
+    convert_data_for_boxplot
+)
+from optimize.visualization import (
+    box_with_whiskers,
+    get_plot_of_optimization
+)
 
 if __name__ == '__main__':
     meta_data = namedtuple('meta_data_for_optimization',
@@ -19,18 +32,15 @@ if __name__ == '__main__':
     log.clean_file(PATH, name_of_result_file)
     stat_data_of_generation = dict()
     for index in range(10):
-        stat_data_of_generation = optimisation.optimization(optimisation.init_generation,
-                                                            optimisation.fitness,
-                                                            optimisation.crossover,
-                                                            optimisation.mutation,
-                                                            meta_data_for_optimization)
+        stat_data_of_generation = optimization(init_generation, fitness, crossover, mutation,
+                                               meta_data_for_optimization)
         log.write_to_file(PATH, index, **stat_data_of_generation, name=name_of_result_file)
         history_of_mins[f'history{index}'] = stat_data_of_generation['list_of_mins']
         history_of_avgs[f'history{index}'] = stat_data_of_generation['list_of_averages']
         global_data_for_plot['global_min_history'].append(stat_data_of_generation['global_min'])
         global_data_for_plot['global_avg_history'].append(stat_data_of_generation['global_avg'])
-    min_data_for_boxplot = optimisation.convert_data_for_boxplot(history_of_mins)
-    avg_data_for_boxplot = optimisation.convert_data_for_boxplot(history_of_avgs)
-    visualization.box_with_whiskers(min_data_for_boxplot, avg_data_for_boxplot)
-    visualization.get_plot_of_optimization(global_data_for_plot['global_min_history'],
-                                           global_data_for_plot['global_avg_history'])
+    min_data_for_boxplot = convert_data_for_boxplot(history_of_mins)
+    avg_data_for_boxplot = convert_data_for_boxplot(history_of_avgs)
+    box_with_whiskers(min_data_for_boxplot, avg_data_for_boxplot)
+    get_plot_of_optimization(global_data_for_plot['global_min_history'],
+                             global_data_for_plot['global_avg_history'])
