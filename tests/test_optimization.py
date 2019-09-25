@@ -108,3 +108,14 @@ def test_optimization_matyas_function(meta_data_for_test_optimization):
                                        optimisation.mutation,
                                        meta_data)
     assert result['global_min'] < 1
+
+
+def test_optimization_init_uniform(meta_data_for_test_optimization):
+    meta_data_structure = meta_data_for_test_optimization
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    result = optimisation.optimization(optimisation.init_uniform_generation,
+                                       optimisation.fitness_matyas_function,
+                                       optimisation.crossover,
+                                       optimisation.mutation,
+                                       meta_data)
+    assert result['global_min'] < 1

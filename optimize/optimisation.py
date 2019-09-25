@@ -2,6 +2,7 @@ import random
 import statistics
 import pandas as pd
 from collections import namedtuple
+from numpy.random import uniform
 
 
 def fitness(args):
@@ -41,8 +42,8 @@ def init_generation(number_of_individuals):
     return [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
 
 
-def init_uniform_generation():
-    pass
+def init_uniform_generation(number_of_individuals):
+    return [tuple(uniform(low=0, high=1, size=2)) for _ in range(number_of_individuals)]
 
 
 def new_offspring(crossover_func, mutation_func, generation, meta_data):
