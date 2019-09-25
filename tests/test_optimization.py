@@ -74,7 +74,7 @@ def test_convert_data_to_dataframe():
 
 def test_optimization_fitness(meta_data_for_test_optimization):
     meta_data_tuple = meta_data_for_test_optimization
-    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
+    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
 
     start_time = time.time()
     result = optimisation.optimization(optimisation.init_generation,
@@ -84,7 +84,7 @@ def test_optimization_fitness(meta_data_for_test_optimization):
                                        meta_data)
     end_time = time.time()
     assert end_time - start_time <= 1
-    assert result['global_min'] < 15
+    assert result['global_min'] < 20
 
 
 def test_optimization_booth_function(meta_data_for_test_optimization):

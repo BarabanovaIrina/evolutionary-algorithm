@@ -4,7 +4,7 @@ from optimize import log
 from optimize.optimisation import (
     optimization,
     init_generation,
-    fitness_matyas_function,
+    fitness,
     crossover,
     mutation,
     convert_data_for_boxplot
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     log.clean_file(PATH, name_of_result_file)
     stat_data_of_generation = dict()
     for index in range(10):
-        stat_data_of_generation = optimization(init_generation, fitness_matyas_function, crossover, mutation,
+        stat_data_of_generation = optimization(init_generation, fitness, crossover, mutation,
                                                meta_data_for_optimization)
         log.write_to_file(PATH, index, **stat_data_of_generation, name=name_of_result_file)
         history_of_mins[f'history{index}'] = stat_data_of_generation['list_of_mins']
