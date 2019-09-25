@@ -3,6 +3,7 @@ import random
 import pytest
 import pandas as pd
 import time
+from collections import namedtuple
 
 
 @pytest.fixture()
@@ -25,9 +26,9 @@ def test_mutation_correct(generation_for_test):
 
 def test_crossover_correct(generation_for_test):
     random.seed(1)
-    parent_1 = random.choice(generation_for_test)
-    parent_2 = random.choice(generation_for_test)
-    assert optimisation.crossover(generation_for_test, random_seed=1) == (parent_1[0], parent_2[1])
+    first_parent = random.choice(generation_for_test)
+    second_parent = random.choice(generation_for_test)
+    assert optimisation.crossover(generation_for_test, random_seed=1) == (first_parent[0], second_parent[1])
 
 
 def test_init_generation_correct():
@@ -35,11 +36,21 @@ def test_init_generation_correct():
 
 
 def test_new_offspring(generation_for_test):
-    delta = 10 ** (-3)
-    retain_num = int(len(generation_for_test) * 0.2)
-    crossover_num = int(len(generation_for_test) * 0.4)
-    mutation_num = int(len(generation_for_test) * 0.4)
-    assert len(optimisation.new_offspring(generation_for_test, retain_num, crossover_num, mutation_num, delta)) == 10
+    meta_data = namedtuple('meta_data_for_new_offspring', ['retain_num',
+                                                           'cross_num',
+                                                           'mutation_num',
+                                                           'delta',
+                                                           ])
+    cross_func = optimisation.crossover
+    mutation_func = optimisation.mutation
+
+    meta_data_for_offspring = meta_data(int(len(generation_for_test) * 0.2),
+                                        int(len(generation_for_test) * 0.4),
+                                        int(len(generation_for_test) * 0.4),
+                                        10 ** (-3),
+                                        )
+
+    assert len(optimisation.new_offspring(cross_func, mutation_func, generation_for_test, meta_data_for_offspring)) == 10
 
 
 def test_convert_data_to_dataframe():
@@ -50,15 +61,21 @@ def test_convert_data_to_dataframe():
 
 
 def test_optimization():
-    retain_rate = 0.2
-    crossover_rate = 0.4
-    mutation_rate = 0.4
-    delta = 10 ** (-3)
-    number_of_generations = 10
-    number_of_individuals = 10
+    meta_data = namedtuple('meta_data_for_optimization',
+                           ['retain_rate',
+                            'crossover_rate',
+                            'mutation_rate',
+                            'delta_for_mutation',
+                            'number_of_generations',
+                            'number_of_individuals'])
+    meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
+
     start_time = time.time()
-    optimisation.optimization(retain_rate, crossover_rate, mutation_rate,
-                              delta, number_of_generations, number_of_individuals)
+    optimisation.optimization(optimisation.init_generation,
+                              optimisation.fitness,
+                              optimisation.crossover,
+                              optimisation.mutation,
+                              meta_data_for_optimization)
     end_time = time.time()
     assert end_time - start_time <= 1
 

@@ -1,6 +1,7 @@
 import random
 import statistics
 import pandas as pd
+from collections import namedtuple
 
 
 def fitness(args):
@@ -11,11 +12,11 @@ def fitness(args):
 def crossover(generation, random_seed=None):
     while True:
         random.seed(random_seed)
-        parent_1 = random.choice(generation)
-        parent_2 = random.choice(generation)
-        if parent_1 != parent_2:
+        first_parent = random.choice(generation)
+        second_parent = random.choice(generation)
+        if first_parent != second_parent:
             break
-    return parent_1[0], parent_2[1]
+    return first_parent[0], second_parent[1]
 
 
 def mutation(generation, delta, random_seed=None):
@@ -30,43 +31,49 @@ def init_generation(number_of_individuals):
     return [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
 
 
-def new_offspring(generation, retain_num, cross_num, mutation_num, delta):
-    temp = [generation[x] for x in range(retain_num)]
-    for _ in range(cross_num):
-        temp.append(crossover(generation))
-    for _ in range(mutation_num):
-        temp.append(mutation(generation, delta))
+def new_offspring(crossover_func, mutation_func, generation, meta_data):
+    temp = [generation[x] for x in range(meta_data.retain_num)]
+    for _ in range(meta_data.cross_num):
+        temp.append(crossover_func(generation))
+    for _ in range(meta_data.mutation_num):
+        temp.append(mutation_func(generation, meta_data.delta))
     return temp
 
 
-def optimization(retain_rate, crossover_rate, mutation_rate, delta, number_of_generations, number_of_individuals):
-    generation = init_generation(number_of_individuals)
-    retain_num = int(len(generation) * retain_rate)
-    cross_num = int(len(generation) * crossover_rate)
-    mutation_num = int(len(generation) * mutation_rate)
+def optimization(init_generation, fitness_function, crossover_function, mutation_function, meta_data_for_optimization):
+    generation = init_generation(meta_data_for_optimization.number_of_individuals)
 
-    list_of_mins = []
-    list_of_averages = []
-    for _ in range(number_of_generations):
-        fitness_values = list(map(fitness, generation))
+    meta_data = namedtuple('meta_data_for_new_offspring', ['retain_num',
+                                                           'cross_num',
+                                                           'mutation_num',
+                                                           'delta',
+                                                           ])
+
+    meta_data_for_new_offspring = meta_data(int(len(generation) * meta_data_for_optimization.retain_rate),
+                                            int(len(generation) * meta_data_for_optimization.crossover_rate),
+                                            int(len(generation) * meta_data_for_optimization.mutation_rate),
+                                            meta_data_for_optimization.delta_for_mutation,
+                                            )
+
+    result_data = dict(list_of_mins=[], list_of_averages=[], global_min=None, global_avg=None)
+    for _ in range(meta_data_for_optimization.number_of_generations):
+        fitness_values = list(map(fitness_function, generation))
         local_minimum = min(fitness_values)
         local_avg = statistics.mean(fitness_values)
-        list_of_mins.append(local_minimum)
-        list_of_averages.append(local_avg)
+        result_data['list_of_mins'].append(local_minimum)
+        result_data['list_of_averages'].append(local_avg)
         sorted_generation = [x for _, x in sorted(zip(fitness_values, generation))]
 
-        new_generation = new_offspring(sorted_generation, retain_num, cross_num, mutation_num, delta)
+        new_generation = new_offspring(crossover_function,
+                                       mutation_function,
+                                       sorted_generation,
+                                       meta_data_for_new_offspring)
         generation = new_generation
 
-    global_min = min(list_of_mins)
-    global_avg = statistics.mean(list_of_averages)
+    result_data['global_min'] = min(result_data['list_of_mins'])
+    result_data['global_avg'] = statistics.mean(result_data['list_of_averages'])
 
-    return {'list_of_mins': list_of_mins,
-            'list_of_averages': list_of_averages,
-            'global_min': global_min,
-            'global_avg': global_avg,
-            }
-
+    return result_data
 
 def convert_data_for_boxplot(data):
     return pd.DataFrame(data).T

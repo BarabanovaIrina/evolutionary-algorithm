@@ -1,8 +1,15 @@
 from optimize import optimisation, log, visualization
+from collections import namedtuple
 
 if __name__ == '__main__':
-    META_DATA = dict(retain_rate=0.2, crossover_rate=0.4, mutation_rate=0.4, delta=10 ** (-3), number_of_generations=10,
-                     number_of_individuals=10, )
+    meta_data = namedtuple('meta_data_for_optimization',
+                           ['retain_rate',
+                            'crossover_rate',
+                            'mutation_rate',
+                            'delta_for_mutation',
+                            'number_of_generations',
+                            'number_of_individuals'])
+    meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10)
 
     PATH = "./"
     name_of_result_file = 'file.txt'
@@ -12,7 +19,11 @@ if __name__ == '__main__':
     log.clean_file(PATH, name_of_result_file)
     stat_data_of_generation = dict()
     for index in range(10):
-        stat_data_of_generation = optimisation.optimization(**META_DATA)
+        stat_data_of_generation = optimisation.optimization(optimisation.init_generation,
+                                                            optimisation.fitness,
+                                                            optimisation.crossover,
+                                                            optimisation.mutation,
+                                                            meta_data_for_optimization)
         log.write_to_file(PATH, index, **stat_data_of_generation, name=name_of_result_file)
         history_of_mins[f'history{index}'] = stat_data_of_generation['list_of_mins']
         history_of_avgs[f'history{index}'] = stat_data_of_generation['list_of_averages']
