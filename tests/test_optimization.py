@@ -107,7 +107,7 @@ def test_optimization_matyas_function(meta_data_for_test_optimization):
                                        optimisation.crossover,
                                        optimisation.mutation,
                                        meta_data)
-    assert result['global_min'] < 1
+    assert result['global_min'] < 2
 
 
 def test_optimization_init_uniform(meta_data_for_test_optimization):
