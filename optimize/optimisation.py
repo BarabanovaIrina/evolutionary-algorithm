@@ -30,6 +30,77 @@ def crossover(generation, random_seed=None):
     return first_parent[0], second_parent[1]
 
 
+def k_point_crossover(generation, random_seed=None):
+    while True:
+        random.seed(random_seed)
+        first_parent = random.choice(generation)
+        second_parent = random.choice(generation)
+        if first_parent != second_parent:
+            break
+
+    first_child, second_child = list(), list()
+
+    number_of_points = random.randint(1, 3)
+    point_indices = []
+    for _ in range(number_of_points):
+        point_indices.append(random.randint(1, len(first_parent)-1))
+    point_indices = list(set(sorted(point_indices)))
+
+    first_child.extend(first_parent[:point_indices[0]])
+    second_child.extend(second_parent[:point_indices[0]])
+    for i in range(len(point_indices)):
+        if i % 2 != 0:
+            first_child.extend(first_parent[point_indices[i]:point_indices[i + 1]])
+            second_child.extend(second_parent[point_indices[i]:point_indices[i + 1]])
+        else:
+            first_child.extend(second_parent[point_indices[i]:point_indices[i + 1]])
+            second_child.extend(first_parent[point_indices[i]:point_indices[i + 1]])
+    if len(point_indices) % 2 != 0:
+        first_child.extend(second_parent[point_indices[-1]:])
+        second_child.extend(first_parent[point_indices[-1]:])
+    else:
+        first_child.extend(first_parent[point_indices[-1]:])
+        second_child.extend(second_parent[point_indices[-1]:])
+    return tuple(first_child)
+
+
+# TODO: second_child
+def arithmetic_crossover(generation, random_seed=None):
+    while True:
+        random.seed(random_seed)
+        first_parent = random.choice(generation)
+        second_parent = random.choice(generation)
+        if first_parent != second_parent:
+            break
+
+    first_child, second_child = list(), list()
+    for index in range(len(first_parent)):
+        alpha = uniform(low=0, high=1)
+        first_child.append(alpha * first_parent[index] + (1 - alpha) * second_parent[index])
+        second_child.append(alpha * second_parent[index] + (1 - alpha) * first_parent[index])
+    return tuple(first_child)
+
+
+# TODO: second_child
+def uniform_crossover(generation, random_seed=None):
+    while True:
+        random.seed(random_seed)
+        first_parent = random.choice(generation)
+        second_parent = random.choice(generation)
+        if first_parent != second_parent:
+            break
+    first_child, second_child = list(), list()
+    for index in range(len(first_parent)):
+        coin = random.randint(0, 1)
+        if coin == 1:
+            first_child.append(first_parent[index])
+            second_child.append(second_parent[index])
+        else:
+            first_child.append(second_parent[index])
+            second_child.append(first_parent[index])
+    return tuple(first_child)
+
+
 def mutation(generation, delta, random_seed=None):
     random.seed(random_seed)
     sign = random.choice([-1, 1])
@@ -38,8 +109,8 @@ def mutation(generation, delta, random_seed=None):
     return child
 
 
-def init_generation(number_of_individuals):
-    return [(random.randint(1, 10), random.randint(1, 10),) for _ in range(number_of_individuals)]
+def init_generation(number_of_individuals, number_of_gens):
+    return [(random.randint(1, 10), random.randint(1, 10)) for _ in range(number_of_individuals)]
 
 
 def init_uniform_generation(number_of_individuals):
@@ -56,7 +127,8 @@ def new_offspring(crossover_func, mutation_func, generation, meta_data):
 
 
 def optimization(init_generation, fitness_function, crossover_function, mutation_function, meta_data_for_optimization):
-    generation = init_generation(meta_data_for_optimization.number_of_individuals)
+    generation = init_generation(meta_data_for_optimization.number_of_individuals,
+                                 meta_data_for_optimization.number_of_gens)
 
     meta_data = namedtuple('meta_data_for_new_offspring', ['retain_num',
                                                            'cross_num',
