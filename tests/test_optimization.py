@@ -24,7 +24,8 @@ def meta_data_for_test_optimization():
                        'mutation_rate',
                        'delta_for_mutation',
                        'number_of_generations',
-                       'number_of_individuals'])
+                       'number_of_individuals',
+                       'number_of_gens',])
 
 
 def test_fitness_correct():
@@ -48,7 +49,7 @@ def test_crossover_correct(generation_for_test):
 
 
 def test_init_generation_correct():
-    assert len(optimisation.init_generation(10)) == 10
+    assert len(optimisation.init_generation(10,2)) == 10
 
 
 def test_new_offspring(generation_for_test):
@@ -79,7 +80,7 @@ def test_convert_data_to_dataframe():
 
 def test_optimization_fitness(meta_data_for_test_optimization):
     meta_data_tuple = meta_data_for_test_optimization
-    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
 
     start_time = time.time()
     result = optimisation.optimization(optimisation.init_generation,
@@ -94,7 +95,7 @@ def test_optimization_fitness(meta_data_for_test_optimization):
 
 def test_optimization_booth_function(meta_data_for_test_optimization):
     meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
     result = optimisation.optimization(optimisation.init_generation,
                                        optimisation.fitness_booth_function,
                                        optimisation.crossover,
@@ -106,7 +107,7 @@ def test_optimization_booth_function(meta_data_for_test_optimization):
 
 def test_optimization_matyas_function(meta_data_for_test_optimization):
     meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
     result = optimisation.optimization(optimisation.init_generation,
                                        optimisation.fitness_matyas_function,
                                        optimisation.crossover,
@@ -117,7 +118,7 @@ def test_optimization_matyas_function(meta_data_for_test_optimization):
 
 def test_optimization_init_uniform(meta_data_for_test_optimization):
     meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10)
+    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
     result = optimisation.optimization(optimisation.init_uniform_generation,
                                        optimisation.fitness_matyas_function,
                                        optimisation.crossover,
