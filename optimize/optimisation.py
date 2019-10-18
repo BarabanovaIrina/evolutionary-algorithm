@@ -109,11 +109,13 @@ def mutation(generation, delta, random_seed=None):
     return child
 
 
+# TODO: include number_of_gens
 def init_generation(number_of_individuals, number_of_gens):
     return [(random.randint(1, 10), random.randint(1, 10)) for _ in range(number_of_individuals)]
 
 
-def init_uniform_generation(number_of_individuals):
+# TODO: include number_of_gens
+def init_uniform_generation(number_of_individuals, number_of_gens):
     return [tuple(uniform(low=0, high=1, size=2)) for _ in range(number_of_individuals)]
 
 
@@ -126,6 +128,7 @@ def new_offspring(crossover_func, mutation_func, generation, meta_data):
     return temp
 
 
+# TODO: check sorted_generations (generator vs generator)
 def optimization(init_generation, fitness_function, crossover_function, mutation_function, meta_data_for_optimization):
     generation = init_generation(meta_data_for_optimization.number_of_individuals,
                                  meta_data_for_optimization.number_of_gens)
