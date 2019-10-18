@@ -8,6 +8,7 @@ from optimize.optimisation import (
     crossover,
     uniform_crossover,
     arithmetic_crossover,
+    laplace_crossover,
     mutation
 )
 
@@ -41,6 +42,10 @@ if __name__ == '__main__':
     modules_block_3 = dict(init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=arithmetic_crossover,
+                           mutate_func=mutation)
+    modules_block_4 = dict(init_generation=init_generation,
+                           fitness=fitness,
+                           crossover_func=laplace_crossover,
                            mutate_func=mutation)
     meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10, 2)
     variance_check(meta_data_for_optimization, modules_block_1)

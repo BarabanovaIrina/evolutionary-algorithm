@@ -2,6 +2,7 @@ import random
 import statistics
 import pandas as pd
 from collections import namedtuple
+import numpy as np
 from numpy.random import uniform
 
 
@@ -64,7 +65,7 @@ def k_point_crossover(generation, random_seed=None):
     return tuple(first_child)
 
 
-# TODO: second_child
+# TODO: second_child in all crossovers
 def arithmetic_crossover(generation, random_seed=None):
     while True:
         random.seed(random_seed)
@@ -81,7 +82,6 @@ def arithmetic_crossover(generation, random_seed=None):
     return tuple(first_child)
 
 
-# TODO: second_child
 def uniform_crossover(generation, random_seed=None):
     while True:
         random.seed(random_seed)
@@ -98,6 +98,28 @@ def uniform_crossover(generation, random_seed=None):
         else:
             first_child.append(second_parent[index])
             second_child.append(first_parent[index])
+    return tuple(first_child)
+
+
+def laplace_crossover(generation, random_seed=None):
+    while True:
+        random.seed(random_seed)
+        first_parent = random.choice(generation)
+        second_parent = random.choice(generation)
+        if first_parent != second_parent:
+            break
+
+    first_child, second_child = list(), list()
+    a = 0
+    b = 1
+    alpha = uniform(low=0, high=1)
+    if alpha<= 0.5:
+        beta = a - b*np.log(alpha)
+    else:
+        beta = a + b*np.log(alpha)
+    for index in range(len(first_parent)):
+        first_child.append(first_parent[index]+beta*abs(first_parent[index]-second_parent[index]))
+        second_child.append(second_parent[index]+beta*abs(first_parent[index]-second_parent[index]))
     return tuple(first_child)
 
 
