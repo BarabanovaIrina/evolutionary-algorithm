@@ -12,6 +12,11 @@ def generation_for_test():
 
 
 @pytest.fixture()
+def generation_for_test_7():
+    return ([1, 2, 3, 4, 5, 6, 7], [8,9,10,11,12,13,14], [15,16,17,18,19,20,21])
+
+
+@pytest.fixture()
 def meta_data_for_test_optimization():
     return namedtuple('meta_data_for_optimization',
                       ['retain_rate',
@@ -119,3 +124,24 @@ def test_optimization_init_uniform(meta_data_for_test_optimization):
                                        optimisation.mutation,
                                        meta_data)
     assert result['global_min'] < 1
+
+
+def test_uniform_crossover(generation_for_test_7):
+    random_seed = 1
+    while True:
+        random.seed(random_seed)
+        first_parent = random.choice(generation_for_test_7)
+        second_parent = random.choice(generation_for_test_7)
+        if first_parent != second_parent:
+            break
+    first_child, second_child = list(), list()
+    for index in range(len(first_parent)):
+        coin = random.randint(0, 1)
+        if coin == 1:
+            first_child.append(first_parent[index])
+            second_child.append(second_parent[index])
+        else:
+            first_child.append(second_parent[index])
+            second_child.append(first_parent[index])
+
+    assert tuple(first_child) == optimisation.uniform_crossover(generation_for_test_7, random_seed=1)
