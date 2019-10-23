@@ -1,4 +1,0 @@
-init_generation: init_generation
-fitness: fitness
-crossover_func: crossover
-mutate_func: mutation
