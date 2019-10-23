@@ -16,7 +16,7 @@ from optimize.visualization import (
 
 
 def init_evolution(meta_data_for_optimization, modules, dir_for_results=''):
-    PATH = "./"
+    PATH = dir_for_results
     name_of_result_file = 'file.txt'
     history_of_mins = dict()
     history_of_avgs = dict()

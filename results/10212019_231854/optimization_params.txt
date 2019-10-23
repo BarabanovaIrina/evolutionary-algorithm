@@ -1,0 +1,1 @@
+{'init_generation': <function init_generation at 0x11a6c8ae8>, 'fitness': <function fitness at 0x10f109a60>, 'crossover_func': <function crossover at 0x11a6c87b8>, 'mutate_func': <function mutation at 0x11a6c8a60>}
