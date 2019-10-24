@@ -9,7 +9,9 @@ from optimize.optimisation import (
     uniform_crossover,
     arithmetic_crossover,
     laplace_crossover,
-    mutation
+    mutation,
+    power_mutation,
+    mpt_mutation,
 )
 from optimize.log import write_run_params
 
@@ -50,7 +52,7 @@ if __name__ == '__main__':
     modules_block_4 = dict(init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=laplace_crossover,
-                           mutate_func=mutation)
+                           mutate_func=mpt_mutation)
     meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
-    variance_check(meta_data_for_optimization, modules_block_1)
+    variance_check(meta_data_for_optimization, modules_block_4)
 
