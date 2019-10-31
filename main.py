@@ -7,7 +7,8 @@ from optimize.optimisation import (
     fitness,
     crossover,
     mutation,
-    convert_data_for_boxplot
+    convert_data_for_boxplot,
+    roulette_wheel_selection,
 )
 from optimize.visualization import (
     box_with_whiskers,
@@ -24,7 +25,8 @@ def init_evolution(meta_data_for_optimization, modules, dir_for_results=''):
     log.clean_file(PATH, name_of_result_file)
     stat_data_of_generation = dict()
     for index in range(10):
-        stat_data_of_generation = optimization(modules['init_generation'],
+        stat_data_of_generation = optimization(modules['select_func'],
+                                               modules['init_generation'],
                                                modules['fitness'],
                                                modules['crossover_func'],
                                                modules['mutate_func'],
@@ -53,7 +55,12 @@ if __name__ == '__main__':
                             'number_of_individuals',
                             'number_of_gens', ])
 
-    modules_block = dict(init_generation=init_generation, fitness=fitness, crossover_func=crossover, mutate_func=mutation)
+    modules_block = dict(select_func=roulette_wheel_selection,
+                         init_generation=init_generation,
+                         fitness=fitness,
+                         crossover_func=crossover,
+                         mutate_func=mutation,
+                         )
     meta_data_for_optimization = meta_data(0.2, 0.4, 0.4, 10 ** (-3), 10, 10, 2)
     init_evolution(meta_data_for_optimization, modules_block)
 

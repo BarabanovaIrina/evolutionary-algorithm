@@ -197,27 +197,38 @@ def init_uniform_generation(number_of_individuals, number_of_gens):
     return [tuple(uniform(low=0, high=1, size=2)) for _ in range(number_of_individuals)]
 
 
-def new_offspring(crossover_func, mutation_func, generation, meta_data):
-    temp = [generation[x] for x in range(meta_data.retain_num)]
+def new_offspring(select_func, fitness_func, crossover_func, mutation_func, generation, meta_data):
+    print('start to creat new offspring')
+    temp = select_func(generation, fitness_func, meta_data.retain_num)
+    cross_pull = select_func(generation, fitness_func, len(generation))
+    mutate_pull = select_func(generation, fitness_func, len(generation))
     for _ in range(meta_data.cross_num):
-        temp.append(crossover_func(generation))
+        print('start to crossover')
+        temp.append(crossover_func(cross_pull))
     for _ in range(meta_data.mutation_num):
-        temp.append(mutation_func(generation, meta_data.delta))
+        print('start to mutate')
+        temp.append(mutation_func(mutate_pull, meta_data.delta))
     return temp
 
 
-def roulette_wheel_selection(generation, fitness_func, random_seed=None):
+def roulette_wheel_selection(generation, fitness_func, num, random_seed=None):
     random.seed(random_seed)
     fitness_values = list(map(fitness_func, generation))
     sum_of_fit_vals = sum(fitness_values)
     fit_prob = [f_v/sum_of_fit_vals for f_v in fitness_values]
     prob_intervals = [sum(fit_prob[:i+1]) for i in range(len(fit_prob))]
     offspring = list()
-    alpha = random.random()
-    for j_index, individual in enumerate(generation):
-        if alpha < prob_intervals[j_index]:
-            offspring.append(individual)
-    return offspring
+    temp=list()
+    while True:
+        alpha = random.random()
+        for index, individual in enumerate(prob_intervals):
+            if alpha < individual:
+                offspring.append(generation[index])
+                temp.append(individual)
+        sorted_offspring = [x for _, x in sorted(zip(temp, offspring))]
+        if len(sorted_offspring) >= num+1:
+            break
+    return offspring[:num+1]
 
 
 def tournament_selection(generation, fitness_func, random_seed=None):
@@ -234,7 +245,7 @@ def tournament_selection(generation, fitness_func, random_seed=None):
 
 
 # TODO: check sorted_generations (generator vs generator)
-def optimization(init_generation, fitness_function, crossover_function, mutation_function, meta_data_for_optimization):
+def optimization(select_func, init_generation, fitness_function, crossover_function, mutation_function, meta_data_for_optimization):
     generation = init_generation(meta_data_for_optimization.number_of_individuals,
                                  meta_data_for_optimization.number_of_gens)
 
@@ -251,7 +262,7 @@ def optimization(init_generation, fitness_function, crossover_function, mutation
                                             )
 
     result_data = dict(list_of_mins=[], list_of_averages=[], global_min=None, global_avg=None)
-    for _ in range(meta_data_for_optimization.number_of_generations):
+    for i in range(meta_data_for_optimization.number_of_generations):
         fitness_values = list(map(fitness_function, generation))
         local_minimum = min(fitness_values)
         local_avg = statistics.mean(fitness_values)
@@ -259,10 +270,14 @@ def optimization(init_generation, fitness_function, crossover_function, mutation
         result_data['list_of_averages'].append(local_avg)
         sorted_generation = [x for _, x in sorted(zip(fitness_values, generation))]
 
-        new_generation = new_offspring(crossover_function,
+        print(i)
+        new_generation = new_offspring(select_func,
+                                       fitness_function,
+                                       crossover_function,
                                        mutation_function,
                                        sorted_generation,
                                        meta_data_for_new_offspring)
+        print(generation)
         generation = new_generation
 
     result_data['global_min'] = min(result_data['list_of_mins'])

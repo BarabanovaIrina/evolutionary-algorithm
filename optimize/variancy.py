@@ -12,6 +12,8 @@ from optimize.optimisation import (
     mutation,
     power_mutation,
     mpt_mutation,
+    roulette_wheel_selection,
+    tournament_selection,
 )
 from optimize.log import write_run_params
 
@@ -37,19 +39,23 @@ if __name__ == '__main__':
                             'number_of_individuals',
                             'number_of_gens', ])
 
-    modules_block_1 = dict(init_generation=init_generation,
+    modules_block_1 = dict(select_func=roulette_wheel_selection,
+                           init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=crossover,
                            mutate_func=mutation)
-    modules_block_2 = dict(init_generation=init_generation,
+    modules_block_2 = dict(select_func=roulette_wheel_selection,
+                           init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=uniform_crossover,
                            mutate_func=mutation)
-    modules_block_3 = dict(init_generation=init_generation,
+    modules_block_3 = dict(select_func=roulette_wheel_selection,
+                           init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=arithmetic_crossover,
                            mutate_func=mutation)
-    modules_block_4 = dict(init_generation=init_generation,
+    modules_block_4 = dict(select_func=roulette_wheel_selection,
+                           init_generation=init_generation,
                            fitness=fitness,
                            crossover_func=laplace_crossover,
                            mutate_func=mpt_mutation)
