@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import seaborn as sns
 import os
@@ -32,3 +33,28 @@ def box_with_whiskers(min_data_frame, avg_data_frame, save_to_file=False, dir=''
         plt.savefig(os.path.join(dir, 'loss_history_boxplots.png'))
     else:
         plt.show()
+
+
+def three_d_scatter(generation):
+    data = data_update(generation)
+    plt.style.use('ggplot')
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    ax.set_zlabel(f'iter')
+    # ax.set_ylabel()
+    # ax.set_xlabel()
+    for global_index, gen in enumerate(data):
+        for index in range(len(gen)):
+            individuals = [(gen[x][0], gen[x][1], global_index) for x in range(len(gen))]
+            for ind in individuals:
+                ax.scatter(ind[0], ind[1], ind[2])
+    plt.pause(1)
+    plt.draw()
+
+
+data = []
+
+
+def data_update(generation):
+    data.append(generation)
+    return data

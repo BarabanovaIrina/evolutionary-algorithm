@@ -4,6 +4,7 @@ import pandas as pd
 from collections import namedtuple
 import numpy as np
 from numpy.random import uniform, power
+from optimize.visualization import three_d_scatter
 
 
 def fitness(args):
@@ -277,7 +278,7 @@ def optimization(select_func, init_generation, fitness_function, crossover_funct
                                        mutation_function,
                                        sorted_generation,
                                        meta_data_for_new_offspring)
-        print(generation)
+        three_d_scatter(new_generation)
         generation = new_generation
 
     result_data['global_min'] = min(result_data['list_of_mins'])

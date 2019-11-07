@@ -23,7 +23,6 @@ def init_evolution(meta_data_for_optimization, modules, dir_for_results=''):
     history_of_avgs = dict()
     global_data_for_plot = dict(global_min_history=[], global_avg_history=[], )
     log.clean_file(PATH, name_of_result_file)
-    stat_data_of_generation = dict()
     for index in range(10):
         stat_data_of_generation = optimization(modules['select_func'],
                                                modules['init_generation'],
