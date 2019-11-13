@@ -4,7 +4,7 @@ import pandas as pd
 from collections import namedtuple
 import numpy as np
 from numpy.random import uniform, power
-from optimize.visualization import three_d_scatter
+from optimize.visualization import three_d_scatter, three_d_surface
 
 
 def fitness(args):
@@ -204,10 +204,10 @@ def new_offspring(select_func, fitness_func, crossover_func, mutation_func, gene
     cross_pull = select_func(generation, fitness_func, len(generation))
     mutate_pull = select_func(generation, fitness_func, len(generation))
     for _ in range(meta_data.cross_num):
-        print('start to crossover')
+        # print('start to crossover')
         temp.append(crossover_func(cross_pull))
     for _ in range(meta_data.mutation_num):
-        print('start to mutate')
+        # print('start to mutate')
         temp.append(mutation_func(mutate_pull, meta_data.delta))
     return temp
 
@@ -219,7 +219,7 @@ def roulette_wheel_selection(generation, fitness_func, num, random_seed=None):
     fit_prob = [f_v/sum_of_fit_vals for f_v in fitness_values]
     prob_intervals = [sum(fit_prob[:i+1]) for i in range(len(fit_prob))]
     offspring = list()
-    temp=list()
+    temp = list()
     while True:
         alpha = random.random()
         for index, individual in enumerate(prob_intervals):
@@ -227,9 +227,9 @@ def roulette_wheel_selection(generation, fitness_func, num, random_seed=None):
                 offspring.append(generation[index])
                 temp.append(individual)
         sorted_offspring = [x for _, x in sorted(zip(temp, offspring))]
-        if len(sorted_offspring) >= num+1:
+        if len(sorted_offspring) >= num:
             break
-    return offspring[:num+1]
+    return sorted_offspring[:num]
 
 
 def tournament_selection(generation, fitness_func, random_seed=None):

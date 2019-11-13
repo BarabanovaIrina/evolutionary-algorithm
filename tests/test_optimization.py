@@ -2,7 +2,6 @@ from optimize import optimisation
 import random
 import pytest
 import pandas as pd
-import time
 from collections import namedtuple
 
 
@@ -60,6 +59,8 @@ def test_new_offspring(generation_for_test):
                                                            ])
     cross_func = optimisation.crossover
     mutation_func = optimisation.mutation
+    select_func = optimisation.roulette_wheel_selection
+    fit_func = optimisation.fitness
 
     meta_data_for_offspring = meta_data(int(len(generation_for_test) * 0.2),
                                         int(len(generation_for_test) * 0.4),
@@ -68,7 +69,12 @@ def test_new_offspring(generation_for_test):
                                         )
 
     assert len(
-        optimisation.new_offspring(cross_func, mutation_func, generation_for_test, meta_data_for_offspring)) == 10
+        optimisation.new_offspring(select_func,
+                                   fit_func,
+                                   cross_func,
+                                   mutation_func,
+                                   generation_for_test,
+                                   meta_data_for_offspring)) == 10
 
 
 def test_convert_data_to_dataframe():
@@ -76,55 +82,6 @@ def test_convert_data_to_dataframe():
     for index in range(10):
         dict_data[f'history{index}'] = [random.randint(1, 10) for _ in range(10)]
     assert optimisation.convert_data_for_boxplot(dict_data).size == pd.DataFrame(dict_data).T.size
-
-
-def test_optimization_fitness(meta_data_for_test_optimization):
-    meta_data_tuple = meta_data_for_test_optimization
-    meta_data = meta_data_tuple(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
-
-    start_time = time.time()
-    result = optimisation.optimization(optimisation.init_generation,
-                                       optimisation.fitness,
-                                       optimisation.crossover,
-                                       optimisation.mutation,
-                                       meta_data)
-    end_time = time.time()
-    assert end_time - start_time <= 1
-    # assert result['global_min'] < 20
-
-
-def test_optimization_booth_function(meta_data_for_test_optimization):
-    meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
-    result = optimisation.optimization(optimisation.init_generation,
-                                       optimisation.fitness_booth_function,
-                                       optimisation.crossover,
-                                       optimisation.mutation,
-                                       meta_data)
-
-    assert result['global_min'] < 10
-
-
-def test_optimization_matyas_function(meta_data_for_test_optimization):
-    meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
-    result = optimisation.optimization(optimisation.init_generation,
-                                       optimisation.fitness_matyas_function,
-                                       optimisation.crossover,
-                                       optimisation.mutation,
-                                       meta_data)
-    assert result['global_min'] < 2
-
-
-def test_optimization_init_uniform(meta_data_for_test_optimization):
-    meta_data_structure = meta_data_for_test_optimization
-    meta_data = meta_data_structure(0.2, 0.4, 0.4, 10 ** (-3), 100, 10, 2)
-    result = optimisation.optimization(optimisation.init_uniform_generation,
-                                       optimisation.fitness_matyas_function,
-                                       optimisation.crossover,
-                                       optimisation.mutation,
-                                       meta_data)
-    assert result['global_min'] < 1
 
 
 def test_uniform_crossover(generation_for_test_7):
@@ -155,11 +112,17 @@ def test_roulette_wheel_selection(generation_for_test):
     prob = [f/f_sum for f in fitness_values]
     prob_intervals = [sum(prob[:i+1]) for i in range(len(prob))]
     offspring = list()
-    r_number = random.random()
-    for i, individual in enumerate(generation_for_test):
-        if r_number < prob_intervals[i]:
-            offspring.append(individual)
-    assert offspring == optimisation.roulette_wheel_selection(generation_for_test, optimisation.fitness, random_seed=1)
+    temp = list()
+    while True:
+        r_number = random.random()
+        for i, individual in enumerate(prob_intervals):
+            if r_number < individual:
+                offspring.append(generation_for_test[i])
+                temp.append(individual)
+        sorted_offspring = [x for _, x in sorted(zip(temp, offspring))]
+        if len(sorted_offspring) >= 10:
+            break
+    assert sorted_offspring[:10] == optimisation.roulette_wheel_selection(generation_for_test, optimisation.fitness, 10, random_seed=1)
 
 
 def test_tournament_selection(generation_for_test):
